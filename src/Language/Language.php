@@ -61,8 +61,8 @@ class Language extends ApolloContainer
 		$twig->addGlobal('__global_translations', $this->translate[$this->lang]);
 		setcookie('default_language', $this->lang, strtotime('+365 days'), '/');
 
-		parent::__construct($config, $twig, $entityManager, $helper, $auth, $logger);
-	}
+        parent::__construct($config, $twig, $helper, $auth, $entityManager, $logger);
+    }
 
 	/**
 	 * @param Config $config
