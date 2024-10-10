@@ -40,6 +40,7 @@ class FormBuilder implements FormBuilderInterface
     {
         $this->form = new Form($name, $options);
         $this->form->setHydrator(new DoctrineHydrator($entityManager));
+        $this->formAttributes = $formAttributes;
     }
 
     /**
