@@ -50,7 +50,8 @@
         "laminas/laminas-diactoros": "^2.19",
         "laminas/laminas-httphandlerrunner": "^2.3",
         "cherif/inertia-psr15": "^0.1.0",
-        "fullpipe/twig-webpack-extension": "^4.0"
+        "fullpipe/twig-webpack-extension": "^4.0",
+        "voku/anti-xss": "^4.1"
     },
     "minimum-stability": "stable",
     "config": {

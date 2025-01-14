@@ -1,16 +1,16 @@
 <?php
 
-namespace Metapp\Apollo\Utils;
+namespace Metapp\Apollo\Services;
 
-use Metapp\Apollo\Config\Config;
-use Metapp\Apollo\Html\Html;
-use Metapp\Apollo\Logger\Logger;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ReflectionContainer;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use Metapp\Apollo\Config\Config;
+use Metapp\Apollo\Html\Html;
+use Metapp\Apollo\Logger\Logger;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;

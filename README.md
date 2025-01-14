@@ -1,6 +1,6 @@
 <br />
 <div align="center">
-    <img src="https://apollo.metapp.hu/assets/images/github_logo.png" alt="Logo" height="80">
+    <img src="https://metapp.hu/assets/images/github_logo.png" alt="Logo" height="80">
 </div>
 
 ## About Apollo

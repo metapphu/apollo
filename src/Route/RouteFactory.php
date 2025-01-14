@@ -3,17 +3,17 @@
 namespace Metapp\Apollo\Route;
 
 
+use Exception;
 use FastRoute\DataGenerator;
 use FastRoute\RouteParser;
-use League\Container\Container;
-use Metapp\Apollo\Html\Html;
-use Exception;
-use Metapp\Apollo\Config\ConfigurableFactoryInterface;
-use Metapp\Apollo\Config\ConfigurableFactoryTrait;
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
 use GuzzleHttp\Psr7\Response;
+use League\Container\Container;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Metapp\Apollo\Config\ConfigurableFactoryInterface;
+use Metapp\Apollo\Config\ConfigurableFactoryTrait;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
+use Metapp\Apollo\Html\Html;
 use Psr\Http\Message\ServerRequestInterface;
 use Twig\Environment;
 

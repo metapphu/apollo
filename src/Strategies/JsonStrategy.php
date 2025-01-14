@@ -2,7 +2,6 @@
 
 namespace Metapp\Apollo\Strategies;
 
-
 use Exception;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Http\Exception\MethodNotAllowedException;
@@ -13,14 +12,12 @@ use League\Route\Strategy\ApplicationStrategy;
 use Metapp\Apollo\Logger\Interfaces\LoggerHelperInterface;
 use Metapp\Apollo\Logger\Traits\LoggerHelperTrait;
 use Metapp\Apollo\Route\Router;
-use Metapp\Apollo\Twig\Twig;
 use Metapp\Apollo\Utils\APIResponseBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 use Twig\Environment;
 
 class JsonStrategy extends ApplicationStrategy implements LoggerHelperInterface

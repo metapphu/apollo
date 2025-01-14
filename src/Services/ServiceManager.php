@@ -1,13 +1,15 @@
 <?php
-namespace Metapp\Apollo\Utils;
+namespace Metapp\Apollo\Services;
 
 
-use League\Container\DefinitionContainerInterface;
-use Metapp\Apollo\Config\Config;
-use Metapp\Apollo\Config\ConfigurableFactoryInterface;
-use League\Container\Exception\NotFoundException;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use League\Container\DefinitionContainerInterface;
+use League\Container\Exception\NotFoundException;
+use Metapp\Apollo\Config\Config;
+use Metapp\Apollo\Config\ConfigurableFactoryInterface;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
+use Metapp\Apollo\Utils\ArrayUtils;
 use Psr\Container\ContainerInterface;
 
 class ServiceManager implements ContainerInterface, ContainerAwareInterface
@@ -18,14 +20,17 @@ class ServiceManager implements ContainerInterface, ContainerAwareInterface
      * @var array
      */
     protected $factories = array();
+
     /**
      * @var array
      */
     protected $configDimensions = array();
+
     /**
      * @var
      */
     private $cache;
+
     /**
      * @var bool
      */

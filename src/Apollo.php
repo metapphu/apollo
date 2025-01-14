@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Metapp\Apollo;
 
-use Metapp\Apollo\Config\Config;
 use GuzzleHttp\Psr7\ServerRequest;
+use Metapp\Apollo\Config\Config;
 use Metapp\Apollo\Factory\Factory;
 use Metapp\Apollo\Logger\ErrorLogger;
 use Metapp\Apollo\Logger\Logger;
-use Metapp\Apollo\Utils\ServiceProvider;
+use Metapp\Apollo\Services\ServiceProvider;
 
 class Apollo
 {

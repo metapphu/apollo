@@ -5,7 +5,7 @@ use Exception;
 use Metapp\Apollo\Config\Config;
 use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
 
 class TablePrefixFactory implements InvokableFactoryInterface, ConfigurableFactoryInterface
 {

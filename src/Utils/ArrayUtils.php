@@ -2,6 +2,9 @@
 
 namespace Metapp\Apollo\Utils;
 
+use Metapp\Apollo\Utils\ArrayUtils\MergeRemoveKey;
+use Metapp\Apollo\Utils\ArrayUtils\MergeReplaceKeyInterface;
+
 class ArrayUtils
 {
 

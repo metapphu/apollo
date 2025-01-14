@@ -59,9 +59,10 @@ class Language extends ApolloContainer
         $twig->addGlobal('__lang_urls', $this->getUrls());
         $twig->addGlobal('__languages', $this->languages);
         $twig->addGlobal('__global_translations', $this->translate[$this->lang]);
-        setcookie('default_language', $this->lang, strtotime('+365 days'), '/');
 
-        parent::__construct($config, $twig, $helper, $auth, $entityManager, $logger);
+        setcookie('default_language', substr($this->lang, 0,2), strtotime('+365 days'), '/', secure: true, httponly: true);
+
+		parent::__construct($config, $twig, $helper, $auth, $entityManager, $logger);
     }
 
     /**
@@ -107,7 +108,7 @@ class Language extends ApolloContainer
             $lng = array_shift($tmp);
             if (strpos($params["request"], 'api/') === false) {
                 if (isset($_COOKIE["default_language"])) {
-                    return $_COOKIE["default_language"];
+                    return substr($_COOKIE["default_language"], 0,2);
                 }
             }
             $headerLang = (isset($_SERVER["HTTP_CONTENT_LANGUAGE"]) ? $_SERVER["HTTP_CONTENT_LANGUAGE"] : $config->get(array('route', 'translator', 'default'), 'hu'));

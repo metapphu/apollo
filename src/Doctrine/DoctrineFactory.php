@@ -13,15 +13,15 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Setup;
 use Exception;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Metapp\Apollo\Config\Config;
 use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
-use Metapp\Apollo\Logger\Logger;
 use Metapp\Apollo\Factory\Factory;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
 use Metapp\Apollo\Language\Language;
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
+use Metapp\Apollo\Logger\Logger;
 use PDO;
 
 class DoctrineFactory implements InvokableFactoryInterface, ConfigurableFactoryInterface, ContainerAwareInterface

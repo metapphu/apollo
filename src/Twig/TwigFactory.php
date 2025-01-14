@@ -4,11 +4,11 @@ namespace Metapp\Apollo\Twig;
 
 use Exception;
 use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
 use Metapp\Apollo\Logger\Logger;
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
-use League\Container\ContainerAwareTrait;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
@@ -53,6 +53,7 @@ class TwigFactory implements InvokableFactoryInterface, ConfigurableFactoryInter
         $options = array(
             'debug' => $this->config->get('debug', false),
             'cache' => $this->config->get('cache', false),
+            'autoescape' => $this->config->get('autoescape', false),
         );
 
         $twig = new Twig($loader, $options);

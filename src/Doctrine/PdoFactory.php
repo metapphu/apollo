@@ -2,10 +2,10 @@
 namespace Metapp\Apollo\Doctrine;
 
 
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
 use Exception;
 use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
 use Metapp\Apollo\Logger\Logger;
 use PDO;
 use PDOException;

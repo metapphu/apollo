@@ -16,6 +16,10 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
     use TranslatorAwareTrait;
     use TranslatorHelperTrait;
 
+    /**
+     * @param $name
+     * @param $options
+     */
     public function __construct($name = null, $options = [])
     {
         parent::__construct($name, $options);
@@ -24,7 +28,7 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
         }
         if (!$this->translator instanceof MvcTranslator) {
             $this->setTranslator(new MvcTranslator(Translator::factory(array(
-                'locale' => self::getLanguageFromUrl() ?? $_COOKIE["default_language"],
+                'locale' => self::getLanguageFromUrl() ?? substr($_COOKIE["default_language"], 0,2),
                 'translation_file_patterns' => array(
                     array(
                         'type' => 'phparray',
@@ -38,11 +42,18 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
         AbstractValidator::setDefaultTranslatorTextDomain(static::class);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function lang()
     {
-        return self::getLanguageFromUrl() ?? ($_COOKIE["default_language"] ?? 'en');
+        return self::getLanguageFromUrl() ?? (substr($_COOKIE["default_language"], 0,2) ?? 'en');
     }
 
+    /**
+     * @param $array
+     * @return array
+     */
     public static function generateInputNameErrors($array)
     {
         $result = self::generateInputNameRec($array);
@@ -75,6 +86,9 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
         return $result;
     }
 
+    /**
+     * @return mixed|string|null
+     */
     public static function getLanguageFromUrl()
     {
         $languages = array();
