@@ -3,7 +3,7 @@
 namespace Metapp\Apollo\Redis;
 
 use Metapp\Apollo\Logger\Logger;
-use Metapp\Apollo\Utils\InvokableFactoryInterface;
+use Metapp\Apollo\Factory\InvokableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
 use Psr\Log\LoggerInterface;
@@ -21,7 +21,7 @@ class RedisFactory implements InvokableFactoryInterface, ConfigurableFactoryInte
 
         if (null == $this->config) {
             $logger->error('Factory', (array)" can't work without configuration");
-            throw new Exception(__CLASS__ . " can't work without configuration");
+            throw new \Exception(__CLASS__ . " can't work without configuration");
         }
 
         $redis = $this->createInstance($logger);

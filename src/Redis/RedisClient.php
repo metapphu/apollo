@@ -9,12 +9,12 @@ class RedisClient
     /**
      * @var \Redis|null
      */
-    private $redis = null;
+    private $redis;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger = null;
+    private $logger;
 
     private $defaultTtl = 3600;
 
