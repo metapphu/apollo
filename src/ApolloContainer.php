@@ -6,6 +6,7 @@ namespace Metapp\Apollo;
 use Metapp\Apollo\Auth\Auth;
 use Metapp\Apollo\Helper\Helper;
 use Doctrine\ORM\EntityManagerInterface;
+use Metapp\Apollo\Redis\RedisClient;
 use Psr\Log\LoggerInterface;
 use Metapp\Apollo\Config\Config;
 use Metapp\Apollo\Logger\Interfaces\LoggerHelperInterface;
@@ -66,6 +67,11 @@ class ApolloContainer implements LoggerHelperInterface
     private $hooks = array();
 
     /**
+     * @var RedisClient|null
+     */
+    protected $redis;
+
+    /**
      * ApolloContainer constructor.
      * @param Config $config
      * @param \Twig\Environment $twig
@@ -74,13 +80,14 @@ class ApolloContainer implements LoggerHelperInterface
      * @param Auth $auth
      * @param LoggerInterface|null $logger
      */
-    public function __construct(Config $config, Environment $twig, Helper $helper, Auth $auth, EntityManagerInterface $entityManager = null, LoggerInterface $logger = null)
+    public function __construct(Config $config, Environment $twig, Helper $helper, Auth $auth, EntityManagerInterface $entityManager = null, LoggerInterface $logger = null, \Redis $redisInstance = null)
     {
         $this->config = $config->fromDimension(array('route','modules'));
         $this->twig = $twig;
         $this->entityManager = $entityManager;
         $this->auth = $auth;
         $this->helper = $helper;
+        $this->redis = new RedisClient($redisInstance, $logger);
         $this->setLogDebug($this->config->get('debug', false));
         if ($logger) {
             $this->setLogger($logger);
