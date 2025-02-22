@@ -19,11 +19,7 @@ trait FormBuilderTrait
         return $this->ajax;
     }
 
-    /**
-     * @param bool $ajax
-     * @return FormBuilderTrait
-     */
-    public function setAjax(bool $ajax): FormBuilderTrait
+    public function setAjax(bool $ajax): static
     {
         $this->ajax = $ajax;
         return $this;
@@ -39,9 +35,9 @@ trait FormBuilderTrait
 
     /**
      * @param bool $autoGenerateResponseDiv
-     * @return FormBuilderTrait
+     * @return $this
      */
-    public function setAutoGenerateResponseDiv(bool $autoGenerateResponseDiv): FormBuilderTrait
+    public function setAutoGenerateResponseDiv(bool $autoGenerateResponseDiv): static
     {
         $this->autoGenerateResponseDiv = $autoGenerateResponseDiv;
         return $this;
@@ -57,9 +53,9 @@ trait FormBuilderTrait
 
     /**
      * @param bool $resetForm
-     * @return FormBuilderTrait
+     * @return $this
      */
-    public function setResetForm(bool $resetForm): FormBuilderTrait
+    public function setResetForm(bool $resetForm): static
     {
         $this->resetForm = $resetForm;
         return $this;
@@ -75,9 +71,9 @@ trait FormBuilderTrait
 
     /**
      * @param string|null $resultText
-     * @return FormBuilderTrait
+     * @return $this
      */
-    public function setResultText(?string $resultText): FormBuilderTrait
+    public function setResultText(?string $resultText): static
     {
         $this->resultText = $resultText;
         return $this;
@@ -93,9 +89,9 @@ trait FormBuilderTrait
 
     /**
      * @param string|null $actionUrl
-     * @return FormBuilderTrait
+     * @return $this
      */
-    public function setActionUrl(?string $actionUrl): FormBuilderTrait
+    public function setActionUrl(?string $actionUrl): static
     {
         $this->actionUrl = $actionUrl;
         return $this;
@@ -111,9 +107,9 @@ trait FormBuilderTrait
 
     /**
      * @param string|null $resultUrl
-     * @return FormBuilderTrait
+     * @return $this
      */
-    public function setResultUrl(?string $resultUrl): FormBuilderTrait
+    public function setResultUrl(?string $resultUrl): static
     {
         $this->resultUrl = $resultUrl;
         return $this;

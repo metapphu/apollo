@@ -57,5 +57,8 @@
     "minimum-stability": "stable",
     "config": {
         "optimize-autoloader": true
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1"
     }
 }

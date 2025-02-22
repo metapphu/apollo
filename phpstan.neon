@@ -1,0 +1,32 @@
+parameters:
+    level: 5
+    paths:
+        - src/
+    ignoreErrors:
+        # Ignore undefined property errors from PHPDoc
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+#'
+
+        # Ignore property does not exist errors from PHPDoc
+        - message: '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+ is not readable#'
+          path: src/*
+
+        - message: '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+ is not writable#'
+          path: src/*
+
+        # Ignore missing property type declarations in PHPDoc
+        - '#PHPDoc tag @property has invalid value \([^)]+\): Unexpected token "[^"]+", expected type at offset#'
+
+        # Ignore invalid types in property PHPDoc
+        - '#PHPDoc tag @property contains unknown class#'
+
+        # Ignore mixed property types
+        - '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+ type has no value type specified in iterable type#'
+
+        # Ignore @var PHPDoc parsing errors
+        - '#PHPDoc tag @var has invalid value \([^)]+\): Unexpected token "[^"]+", expected type at offset#'
+        - '#PHPDoc tag @var#'
+        - '#Constant BASE_DIR not found#'
+
+        -
+            identifier: instanceof.alwaysTrue
+            path: src/Doctrine/*

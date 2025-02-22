@@ -16,6 +16,7 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
     use TranslatorAwareTrait;
     use TranslatorHelperTrait;
 
+
     /**
      * @param $name
      * @param $options
@@ -38,6 +39,7 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
                 ),
             ))));
         }
+
         AbstractValidator::setDefaultTranslator($this->translator);
         AbstractValidator::setDefaultTranslatorTextDomain(static::class);
     }

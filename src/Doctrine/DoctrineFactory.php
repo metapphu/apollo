@@ -2,7 +2,6 @@
 
 namespace Metapp\Apollo\Doctrine;
 
-
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
@@ -43,7 +42,7 @@ class DoctrineFactory implements InvokableFactoryInterface, ConfigurableFactoryI
     {
         $this->logger = new Logger('DOCTRINE');
 
-        if (!$this->config instanceof Config) {
+        if (!($this->config instanceof Config)) {
             $this->logger->error('Factory', (array)" can't work without configuration");
             throw new Exception(__CLASS__ . " can't work without configuration");
         }
@@ -128,6 +127,8 @@ class DoctrineFactory implements InvokableFactoryInterface, ConfigurableFactoryI
         $entityManager = new \Metapp\Apollo\Doctrine\EntityManager($connection, $config, $eventManager);
 
         $this->addTypeMappings($entityManager);
+        $this->addEventListeners($eventManager);
+        $this->addEventSubscribers($eventManager);
         $this->registerAutoloadNamespaces();
 
         return $entityManager;

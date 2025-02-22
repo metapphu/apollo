@@ -14,7 +14,6 @@ use Metapp\Apollo\Twig\Interfaces\TwigAwareInterface;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use League\Route\Http\Exception as HttpException;
-use League\Container\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Twig\Environment;
@@ -25,18 +24,10 @@ class ApolloKernel implements LoggerHelperInterface
 {
     use LoggerHelperTrait;
 
-    /**
-     * @var Container
-     */
-    private $container;
-    /**
-     * @var \Twig\Environment
-     */
-    private $twig;
+    private ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
+    private \Twig\Environment $twig;
+
     public function __construct(ContainerInterface $container)
     {
         if (!ob_get_level()) {
@@ -69,7 +60,7 @@ class ApolloKernel implements LoggerHelperInterface
                     $config->get(array('form', 'initializers'), array())
                 );
             }
-            $plugin_config['initializers'][] = function /** @noinspection PhpUnusedParameterInspection */
+            $plugin_config['initializers'][] = function
             (
                 $context,
                 $object
@@ -125,18 +116,16 @@ class ApolloKernel implements LoggerHelperInterface
                     $this->error(ServerRequest::fromGlobals()->getUri()->getPath(), $error);
                     $exception = new HttpException(500);
                     $response = new Response($exception->getStatusCode(), array(), strtok($exception->getMessage(), "\n"));
-                    if ($this->twig instanceof Environment) {
-                        $params = array(
-                            'title' => $response->getStatusCode(),
-                            'block' => array(
-                                'title' => $response->getReasonPhrase(),
-                                'content' => $response->getBody()
-                            ),
-                        );
-                        /** @var Twig $twig */
-                        $twig = $this->twig;
-                        $response->getBody()->write($twig->render('errors.html.twig', $params));
-                    }
+                    $params = array(
+                        'title' => $response->getStatusCode(),
+                        'block' => array(
+                            'title' => $response->getReasonPhrase(),
+                            'content' => $response->getBody()
+                        ),
+                    );
+                    /** @var Twig $twig */
+                    $twig = $this->twig;
+                    $response->getBody()->write($twig->render('errors.html.twig', $params));
                     ob_end_clean();
                     echo Html::response($response);
                     break;

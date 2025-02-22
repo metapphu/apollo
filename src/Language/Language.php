@@ -72,50 +72,54 @@ class Language extends ApolloContainer
     public static function parseLang(Config $config, $basePath = null)
     {
         $languages = array();
-        foreach (array_diff(scandir($config->get(array('route', 'translator', 'path'), '')), array('.', '..')) as $lang) {
-            $languages[] = str_replace(".php", "", $lang);
-        }
+        $dir = $config->get(array('route', 'translator', 'path'), null);
+        if(!empty($dir)){
+            foreach (array_diff(scandir($config->get(array('route', 'translator', 'path'), '')), array('.', '..')) as $lang) {
+                $languages[] = str_replace(".php", "", $lang);
+            }
 
-        if (isset($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
-            if (!empty($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
-                if (in_array($_SERVER["HTTP_CONTENT_LANGUAGE"], $languages)) {
-                    return $_SERVER["HTTP_CONTENT_LANGUAGE"];
+            if (isset($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
+                if (!empty($_SERVER["HTTP_CONTENT_LANGUAGE"])) {
+                    if (in_array($_SERVER["HTTP_CONTENT_LANGUAGE"], $languages)) {
+                        return $_SERVER["HTTP_CONTENT_LANGUAGE"];
+                    }
                 }
             }
-        }
 
-        $params = $_GET;
+            $params = $_GET;
 
-        if ($basePath != null) {
-            if ($basePath != '/') {
-                if (substr_count($params["request"], '/') >= 1) {
-                    $lang = explode('/', $params["request"])[1];
-                    $params["language"] = $lang;
+            if ($basePath != null) {
+                if ($basePath != '/') {
+                    if (substr_count($params["request"], '/') >= 1) {
+                        $lang = explode('/', $params["request"])[1];
+                        $params["language"] = $lang;
+                    }
                 }
             }
-        }
 
-        if (isset($params["language"])) {
-            if (in_array($params["request"], $languages)) {
-                return $params["request"];
-            }
-            if (in_array($params["language"], $languages)) {
-                return $params["language"];
-            }
-        }
-        if (array_key_exists('request', $params)) {
-            $tmp = explode('/', $params['request']);
-            $lng = array_shift($tmp);
-            if (strpos($params["request"], 'api/') === false) {
-                if (isset($_COOKIE["default_language"])) {
-                    return substr($_COOKIE["default_language"], 0,2);
+            if (isset($params["language"])) {
+                if (in_array($params["request"], $languages)) {
+                    return $params["request"];
+                }
+                if (in_array($params["language"], $languages)) {
+                    return $params["language"];
                 }
             }
-            $headerLang = (isset($_SERVER["HTTP_CONTENT_LANGUAGE"]) ? $_SERVER["HTTP_CONTENT_LANGUAGE"] : $config->get(array('route', 'translator', 'default'), 'hu'));
-            return in_array($lng, $languages) ? $lng : (!empty($headerLang) ? (in_array($headerLang, $languages) ? $headerLang : $config->get(array('route', 'translator', 'default'), 'hu')) : $config->get(array('route', 'translator', 'default'), 'hu'));
-        } else {
-            return $config->get(array('route', 'translator', 'default'), 'hu');
+            if (array_key_exists('request', $params)) {
+                $tmp = explode('/', $params['request']);
+                $lng = array_shift($tmp);
+                if (strpos($params["request"], 'api/') === false) {
+                    if (isset($_COOKIE["default_language"])) {
+                        return substr($_COOKIE["default_language"], 0,2);
+                    }
+                }
+                $headerLang = (isset($_SERVER["HTTP_CONTENT_LANGUAGE"]) ? $_SERVER["HTTP_CONTENT_LANGUAGE"] : $config->get(array('route', 'translator', 'default'), 'hu'));
+                return in_array($lng, $languages) ? $lng : (!empty($headerLang) ? (in_array($headerLang, $languages) ? $headerLang : $config->get(array('route', 'translator', 'default'), 'hu')) : $config->get(array('route', 'translator', 'default'), 'hu'));
+            } else {
+                return $config->get(array('route', 'translator', 'default'), 'hu');
+            }
         }
+        return 'hu';
     }
 
     /**

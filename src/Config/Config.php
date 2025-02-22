@@ -1,6 +1,6 @@
 <?php
-namespace Metapp\Apollo\Config;
 
+namespace Metapp\Apollo\Config;
 
 use Metapp\Apollo\Utils\ArrayUtils;
 
@@ -9,7 +9,8 @@ class Config
     /**
      * @var array
      */
-    private array $config = array();
+    private array $config;
+
     /**
      * @var array
      */
@@ -18,61 +19,61 @@ class Config
     /**
      * Config constructor.
      * @param array $config
-     * @param array|string|null $base
+     * @param array|string|bool|null $base
      */
-    public function __construct(array $config = array(), $base = null)
+    final public function __construct(array $config = array(), array|string|bool $base = null)
     {
         $this->config = $config;
         $this->setBase($base);
     }
 
     /**
-     * @param array|string $dimensionNames
-     * @return array|string|null
+     * @param array|string|bool $dimensionNames
+     * @return bool|array|string|bool|null
      */
-    public function has($dimensionNames): bool|array|string|null
-	{
+    public function has(array|string|bool $dimensionNames): bool|array|string|null
+    {
         $keys = $this->_keys($dimensionNames);
         return $this->_has($keys);
     }
 
     /**
-     * @param array|string|null $dimensionNames
-     * @param array|string|null $default
-     * @return array|string|null
+     * @param array|string|bool|null $dimensionNames
+     * @param array|string|bool|null $default
+     * @return array|string|bool|null
      */
-    public function get($dimensionNames=null, $default=null)
+    public function get(array|string|bool $dimensionNames = null, array|string|bool $default = null): array|string|bool|null
     {
         $config = $this->_get($this->_keys($dimensionNames), $this->config);
         return is_null($config) ? $default : $config;
     }
 
     /**
-     * @param array|string|null $dimensionNames
-     * @param array|string|null $value
-     * @return Config
+     * @param array|string|bool|null $dimensionNames
+     * @param array|string|bool|null $value
+     * @return $this
      */
-    public function set($dimensionNames=null, $value=null)
+    public function set(array|string|bool $dimensionNames = null, array|string|bool $value = null): static
     {
         $this->_set($this->_keys($dimensionNames), $value);
         return $this;
     }
 
     /**
-     * @param array|string|null $dimensionNames
-     * @return Config
+     * @param array|string|bool|null $dimensionNames
+     * @return self
      */
-    public function fromDimension($dimensionNames=null)
+    public function fromDimension(array|string|bool $dimensionNames = null): self
     {
         $config = $this->_get($this->_keys($dimensionNames), $this->config);
-        return new static((array)$config);
+        return new self((array)$config);
     }
 
     /**
-     * @param array|string|null $dimensionNames
+     * @param array|string|bool|null $dimensionNames
      * @return array
      */
-    private function _keys($dimensionNames=null)
+    private function _keys(array|string|bool $dimensionNames = null): array
     {
         if (!is_null($dimensionNames) && !is_array($dimensionNames)) {
             $dimensionNames = array($dimensionNames);
@@ -90,7 +91,7 @@ class Config
      * @param array $keys
      * @return bool
      */
-    private function _has(array $keys)
+    private function _has(array $keys): bool
     {
         $config = $this->config;
         foreach ($keys as $key) {
@@ -106,9 +107,9 @@ class Config
     /**
      * @param array $keys
      * @param array|null $config
-     * @return array|string|null
+     * @return array|string|bool|null
      */
-    private function _get(array $keys = array(), array $config = null)
+    private function _get(array $keys = array(), array $config = null): array|string|bool|null
     {
         foreach ($keys as $key) {
             if (is_array($config) && array_key_exists($key, $config)) {
@@ -122,9 +123,9 @@ class Config
 
     /**
      * @param array $keys
-     * @param array|string|null $value
+     * @param array|string|bool|null $value
      */
-    private function _set(array $keys, $value = null)
+    private function _set(array $keys, array|string|bool $value = null): void
     {
         $cfg = &$this->config;
         foreach ($keys as $key) {
@@ -137,10 +138,10 @@ class Config
     }
 
     /**
-     * @param array|string|null $base
-     * @return Config
+     * @param array|string|bool|null $base
+     * @return $this
      */
-    public function setBase($base = null)
+    public function setBase(array|string|bool $base = null): static
     {
         if (!is_null($base) && !is_array($base)) {
             $base = array($base);
@@ -152,17 +153,17 @@ class Config
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->config;
     }
 
     /**
-     * @param Config|array $config
+     * @param array|Config $config
      * @param bool $preserveNumericKeys
      * @return $this
      */
-    public function merge($config, $preserveNumericKeys = false)
+    public function merge(array|Config $config, bool $preserveNumericKeys = false): static
     {
         $merge = $config instanceof self ? $config->toArray() : (array)$config;
         $this->config = ArrayUtils::merge($this->config, $merge, $preserveNumericKeys);

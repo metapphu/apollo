@@ -55,14 +55,12 @@ class Auth
 		$a = $this->config->get(array('route', 'modules', 'Session', 'entity', 'user_auth_data'), 'email');
         try {
             $decodedData = JWT::decode($token, new Key($this->config->get(array('jwt','key')), 'HS256'));
-            if (is_object($decodedData)) {
-                $fetchData = $decodedData->data;
+            $fetchData = $decodedData->data;
 
-                $data = $fetchData->{$a};
-                $getUser = $this->entityManager->getRepository($table)->findOneBy(array($where => $data));
-                if ($getUser) {
-                    return true;
-                }
+            $data = $fetchData->{$a};
+            $getUser = $this->entityManager->getRepository($table)->findOneBy(array($where => $data));
+            if ($getUser) {
+                return true;
             }
         } catch (\Exception $e) {
         }
@@ -80,15 +78,13 @@ class Auth
 		$a = $this->config->get(array('route', 'modules', 'Session', 'entity', 'user_auth_data'), 'email');
 		try {
 			$decodedData = JWT::decode($token, new Key($this->config->get(array('jwt','key')), 'HS256'));
-			if (is_object($decodedData)) {
-				$fetchData = $decodedData->data;
+            $fetchData = $decodedData->data;
 
-				$data = $fetchData->{$a};
-				$getUser = $this->entityManager->getRepository($table)->findOneBy(array($where => $data));
-				if ($getUser) {
-					return $getUser;
-				}
-			}
+            $data = $fetchData->{$a};
+            $getUser = $this->entityManager->getRepository($table)->findOneBy(array($where => $data));
+            if ($getUser) {
+                return $getUser;
+            }
 		} catch (\Exception $e) {
 		}
 		return false;

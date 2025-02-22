@@ -108,12 +108,15 @@ class Router extends \League\Route\Router implements LoggerHelperInterface, Conf
         /** @var ServerRequestInterface $serverRequestInterface */
         $serverRequestInterface = $this->container->get(ServerRequestInterface::class);
         $newPath = $serverRequestInterface->getUri()->getPath();
-        foreach (array_diff(scandir($config->get(array('route','translator','path'),'')),array('.', '..')) as $lang) {
-            $cleanLang = str_replace(".php","",$lang);
-            if($newPath == '/'.$cleanLang){
-                $newPath = '/';
-            }else{
-                $newPath = str_replace('/'.$cleanLang.'/','/',$newPath);
+        $translatorDir = $config->get(array('route','translator','path'),null);
+        if(!empty($translatorDir)) {
+            foreach (array_diff(scandir($translatorDir), array('.', '..')) as $lang) {
+                $cleanLang = str_replace(".php", "", $lang);
+                if ($newPath == '/' . $cleanLang) {
+                    $newPath = '/';
+                } else {
+                    $newPath = str_replace('/' . $cleanLang . '/', '/', $newPath);
+                }
             }
         }
         $newInterface = $serverRequestInterface->withUri($serverRequestInterface->getUri()->withPath($newPath));

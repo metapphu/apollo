@@ -88,7 +88,7 @@ class ApolloContainer implements LoggerHelperInterface
         $this->auth = $auth;
         $this->helper = $helper;
         $this->redis = new RedisClient($redisInstance, $logger);
-        $this->setLogDebug($this->config->get('debug', false));
+        $this->setLogDebug((bool)$this->config->get('debug', false));
         if ($logger) {
             $this->setLogger($logger);
         }
