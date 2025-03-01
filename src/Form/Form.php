@@ -29,7 +29,7 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
         }
         if (!$this->translator instanceof MvcTranslator) {
             $this->setTranslator(new MvcTranslator(Translator::factory(array(
-                'locale' => self::getLanguageFromUrl() ?? substr($_COOKIE["default_language"], 0,2),
+                'locale' => self::getLanguageFromUrl() ?? substr($_COOKIE["default_language"], 0, 2),
                 'translation_file_patterns' => array(
                     array(
                         'type' => 'phparray',
@@ -49,7 +49,7 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
      */
     public function lang()
     {
-        return self::getLanguageFromUrl() ?? (substr($_COOKIE["default_language"], 0,2) ?? 'en');
+        return self::getLanguageFromUrl() ?? (substr($_COOKIE["default_language"], 0, 2) ?? 'en');
     }
 
     /**
@@ -95,22 +95,24 @@ class Form extends \Laminas\Form\Form implements TranslatorAwareInterface, Trans
     {
         $languages = array();
         $dirPath = $_SERVER["DOCUMENT_ROOT"] . '/config/translations';
-        $files = scandir($dirPath);
-        foreach ($files as $file) {
-            if($file != "." && $file != "..") {
-                $filePath = $dirPath . '/' . $file;
-                if (is_file($filePath)) {
-                    $languages[] = str_replace('.php', '', $filePath);
+        if (is_dir($dirPath)) {
+            $files = scandir($dirPath);
+            foreach ($files as $file) {
+                if ($file != "." && $file != "..") {
+                    $filePath = $dirPath . '/' . $file;
+                    if (is_file($filePath)) {
+                        $languages[] = str_replace('.php', '', $filePath);
+                    }
                 }
             }
-        }
-        $request = $_GET["request"];
-        $exp = explode("/", $request);
-        if ($exp[0] == "admin") {
-            if (in_array($exp[1], $languages)) {
-                return $exp[1];
-            } else {
-                return null;
+            $request = $_GET["request"];
+            $exp = explode("/", $request);
+            if ($exp[0] == "admin") {
+                if (in_array($exp[1], $languages)) {
+                    return $exp[1];
+                } else {
+                    return null;
+                }
             }
         }
         return $_GET["language"] ?? 'hu';
