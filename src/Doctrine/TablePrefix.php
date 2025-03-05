@@ -2,7 +2,7 @@
 namespace Metapp\Apollo\Doctrine;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use ReflectionClass;
 use ReflectionException;
 
@@ -43,7 +43,7 @@ class TablePrefix
         }
 
         foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-            if ($mapping['type'] == ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+            if ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 $prefix = '';
                 try {
                     $r = new ReflectionClass($mapping['targetEntity']);

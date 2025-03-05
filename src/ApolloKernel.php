@@ -102,7 +102,7 @@ class ApolloKernel implements LoggerHelperInterface
     }
 
 
-    public function _fatal_handler()
+    public function _fatal_handler(): void
     {
         $error = error_get_last();
         if(isset($error['type'])){
@@ -114,7 +114,7 @@ class ApolloKernel implements LoggerHelperInterface
                 case E_USER_ERROR:
                 case E_RECOVERABLE_ERROR:
                     $this->error(ServerRequest::fromGlobals()->getUri()->getPath(), $error);
-                    $exception = new HttpException(500);
+                    $exception = new HttpException(500, 'Internal Server Error');
                     $response = new Response($exception->getStatusCode(), array(), strtok($exception->getMessage(), "\n"));
                     $params = array(
                         'title' => $response->getStatusCode(),
@@ -131,5 +131,4 @@ class ApolloKernel implements LoggerHelperInterface
                     break;
             }
         }
-    }
-}
+    }}

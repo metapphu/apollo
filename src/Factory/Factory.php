@@ -62,8 +62,6 @@ class Factory{
                     $filename
                 ));
             }
-
-            /** @noinspection PhpIncludeInspection */
             $config = include $file_path;
         } else {
             throw new RuntimeException(sprintf(

@@ -7,6 +7,8 @@ use Laminas\I18n\Translator\Translator;
 
 trait TranslatorLoaderTrait
 {
+    protected ?Translator $translator = null;
+
     /**
      * @param string|null $textDomain
      * @noinspection PhpUnused

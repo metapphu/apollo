@@ -2,12 +2,9 @@
 
 namespace Metapp\Apollo\Route;
 
-use Cherif\InertiaPsr15\Middleware\InertiaMiddleware;
 use FastRoute\DataGenerator;
-use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
-use FastRoute\RouteParser\Std as StdRouteParser;
 use League\Container\Container;
 use League\Route\ContainerAwareInterface;
 use League\Route\ContainerAwareTrait;
@@ -17,7 +14,6 @@ use Metapp\Apollo\Config\ConfigurableFactoryInterface;
 use Metapp\Apollo\Config\ConfigurableFactoryTrait;
 use GuzzleHttp\Psr7\Response;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Metapp\Apollo\Logger\Interfaces\LoggerHelperInterface;
@@ -62,14 +58,12 @@ class Router extends \League\Route\Router implements LoggerHelperInterface, Conf
                                 RouteParser        $parser    = null,
                                 DataGenerator      $generator = null) {
         $this->container = ($container instanceof ContainerInterface) ? $container : new Container;
-        // build parent route collector
         $parser    = ($parser instanceof RouteParser) ? $parser : new RouteParser\Std();
         $generator = ($generator instanceof DataGenerator) ? $generator : new DataGenerator\GroupCountBased();
         parent::__construct(new RouteCollector(
             $parser,
             $generator
         ));
-       // $this->lazyMiddleware(\Cherif\InertiaPsr15\Middleware\InertiaMiddleware::class);
     }
 
     /**
@@ -213,7 +207,6 @@ class Router extends \League\Route\Router implements LoggerHelperInterface, Conf
                     if ($this->validator instanceof RouteValidatorInterface) {
                         $validator = $this->validator;
                         $map = $validator->validate($map, $requires, $options, $this->container);
-
                     }
                 }
             }

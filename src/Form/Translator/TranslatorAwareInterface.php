@@ -1,7 +1,7 @@
 <?php
 namespace Metapp\Apollo\Form\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 interface TranslatorAwareInterface
 {
