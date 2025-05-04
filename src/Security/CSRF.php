@@ -2,7 +2,7 @@
 
 namespace Metapp\Apollo\Security;
 
-use Metapp\Apollo\Form\Form;
+use Metapp\Apollo\UI\Form\Form;
 
 class CSRF
 {
