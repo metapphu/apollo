@@ -110,7 +110,7 @@ class APIResponseBuilder{
         if($this->getMessage() != ""){
             $response["message"] = $this->getMessage();
         }
-        if(is_array($this->getData())){
+        if(is_array($this->getData()) && !empty($this->getData())){
             $response["data"] = $this->getData();
         }
 

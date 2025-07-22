@@ -117,7 +117,7 @@ class JsonStrategy extends ApplicationStrategy implements LoggerHelperInterface
                     if ($exception instanceof UnauthorizedException) {
                         $apiResponseBuilder = new APIResponseBuilder(401, "Unauthorized");
                         $response->getBody()->write($apiResponseBuilder->build());
-                        return $response->withHeader('Content-type', $this->strategy->getContentType());
+                        return $response->withHeader('Content-type', $this->strategy->getContentType())->withStatus($apiResponseBuilder->getStatus());
                     }
                     if ($exception instanceof HttpException) {
                         $message = $exception->getMessage();
@@ -137,13 +137,13 @@ class JsonStrategy extends ApplicationStrategy implements LoggerHelperInterface
 
                         $apiResponseBuilder = new APIResponseBuilder($exception->getStatusCode(), $message, $data);
                         $response->getBody()->write($apiResponseBuilder->build());
-                        return $response->withHeader('Content-type', $this->strategy->getContentType());
+                        return $response->withHeader('Content-type', $this->strategy->getContentType())->withStatus($apiResponseBuilder->getStatus());
                     }
                     $this->strategy->error('FatalError', (array)$exception->getMessage());
                     $response = $response->withStatus(500);
                     $apiResponseBuilder = new APIResponseBuilder($response->getStatusCode(), $response->getReasonPhrase());
                     $response->getBody()->write($apiResponseBuilder->build());
-                    return $response->withHeader('Content-type', $this->strategy->getContentType());
+                    return $response->withHeader('Content-type', $this->strategy->getContentType())->withStatus($apiResponseBuilder->getStatus());
                 }
             }
         };
@@ -180,7 +180,7 @@ class JsonStrategy extends ApplicationStrategy implements LoggerHelperInterface
                     $apiResponseBuilder = new APIResponseBuilder($response->getStatusCode(), $response->getReasonPhrase());
                 }
                 $response->getBody()->write($apiResponseBuilder->build());
-                return $response->withHeader('Content-type', $this->strategy->getContentType());
+                return $response->withHeader('Content-type', $this->strategy->getContentType())->withStatus($apiResponseBuilder->getStatus());
             }
         };
     }

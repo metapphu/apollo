@@ -29,7 +29,7 @@ trait DataTableBuilderTrait
      * @param bool $serverSide
      * @return DataTableBuilderTrait
      */
-    public function setServerSide(bool $serverSide): DataTableBuilderTrait
+    public function setServerSide(bool $serverSide): self
     {
         $this->serverSide = $serverSide;
         return $this;
@@ -47,7 +47,7 @@ trait DataTableBuilderTrait
      * @param int $pageLength
      * @return DataTableBuilderTrait
      */
-    public function setPageLength(int $pageLength): DataTableBuilderTrait
+    public function setPageLength(int $pageLength): self
     {
         $this->pageLength = $pageLength;
         return $this;
@@ -65,7 +65,7 @@ trait DataTableBuilderTrait
      * @param bool $lengthChange
      * @return DataTableBuilderTrait
      */
-    public function setLengthChange(bool $lengthChange): DataTableBuilderTrait
+    public function setLengthChange(bool $lengthChange): self
     {
         $this->lengthChange = $lengthChange;
         return $this;
@@ -83,7 +83,7 @@ trait DataTableBuilderTrait
      * @param bool $ordering
      * @return DataTableBuilderTrait
      */
-    public function setOrdering(bool $ordering): DataTableBuilderTrait
+    public function setOrdering(bool $ordering): self
     {
         $this->ordering = $ordering;
         return $this;
@@ -101,7 +101,7 @@ trait DataTableBuilderTrait
      * @param bool $filter
      * @return DataTableBuilderTrait
      */
-    public function setFilter(bool $filter): DataTableBuilderTrait
+    public function setFilter(bool $filter): self
     {
         $this->filter = $filter;
         return $this;
@@ -119,7 +119,7 @@ trait DataTableBuilderTrait
      * @param string $language
      * @return DataTableBuilderTrait
      */
-    public function setLanguage(string $language): DataTableBuilderTrait
+    public function setLanguage(string $language): self
     {
         $this->language = $language;
         return $this;
@@ -137,7 +137,7 @@ trait DataTableBuilderTrait
      * @param string $languageUri
      * @return DataTableBuilderTrait
      */
-    public function setLanguageUri(string $languageUri): DataTableBuilderTrait
+    public function setLanguageUri(string $languageUri): self
     {
         $this->languageUri = $languageUri;
         return $this;
@@ -155,7 +155,7 @@ trait DataTableBuilderTrait
      * @param string|null $fetchUrl
      * @return DataTableBuilderTrait
      */
-    public function setFetchUrl(?string $fetchUrl): DataTableBuilderTrait
+    public function setFetchUrl(?string $fetchUrl): self
     {
         $this->fetchUrl = $fetchUrl;
         return $this;
@@ -173,7 +173,7 @@ trait DataTableBuilderTrait
      * @param array $columns
      * @return DataTableBuilderTrait
      */
-    public function setColumns(array $columns): DataTableBuilderTrait
+    public function setColumns(array $columns): self
     {
         $this->columns = $columns;
         return $this;
@@ -183,7 +183,7 @@ trait DataTableBuilderTrait
      * @param array $columnDetails
      * @return DataTableBuilderTrait
      */
-    public function addToColumn(array $columnDetails): DataTableBuilderTrait
+    public function addToColumn(array $columnDetails): self
     {
         $this->columns[] = $columnDetails;
         return $this;
@@ -201,7 +201,7 @@ trait DataTableBuilderTrait
      * @param bool $addActionBtns
      * @return DataTableBuilderTrait
      */
-    public function setAddActionBtns(bool $addActionBtns): DataTableBuilderTrait
+    public function setAddActionBtns(bool $addActionBtns): self
     {
         $this->addActionBtns = $addActionBtns;
         return $this;
@@ -219,7 +219,7 @@ trait DataTableBuilderTrait
      * @param string $actionBtnsTitle
      * @return DataTableBuilderTrait
      */
-    public function setActionBtnsTitle(string $actionBtnsTitle): DataTableBuilderTrait
+    public function setActionBtnsTitle(string $actionBtnsTitle): self
     {
         $this->actionBtnsTitle = $actionBtnsTitle;
         return $this;
@@ -237,7 +237,7 @@ trait DataTableBuilderTrait
      * @param array $actionBtnsExtraOptions
      * @return DataTableBuilderTrait
      */
-    public function setActionBtnsExtraOptions(array $actionBtnsExtraOptions): DataTableBuilderTrait
+    public function setActionBtnsExtraOptions(array $actionBtnsExtraOptions): self
     {
         $this->actionBtnsExtraOptions = $actionBtnsExtraOptions;
         return $this;

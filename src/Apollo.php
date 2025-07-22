@@ -173,7 +173,7 @@ class Apollo
 
     private function buildRoutes($array = array()){
         $moduleFolders = array();
-        foreach (new \DirectoryIterator($_SERVER["DOCUMENT_ROOT"]."/modules") as $dir) {
+        foreach (new \DirectoryIterator(BASE_DIR."/modules") as $dir) {
             if ($dir->isDot()) continue;
             if ($dir->isDir()) {
                 $moduleFolders[] = $dir->current()->getFilename();
