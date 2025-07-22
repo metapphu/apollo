@@ -1,6 +1,6 @@
 <?php
 
-namespace Metapp\Apollo\Database\Doctrine\Console;
+namespace Metapp\Apollo\Doctrine\Console;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Table;
@@ -18,15 +18,25 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
     private EntityManagerInterface $entityManager;
     private EntityManagerProvider $entityManagerProvider;
     private array $generatedEntities = [];
+    private array $validFetchStrategies = ['LAZY', 'EAGER', 'EXTRA_LAZY'];
+    private string $namespace = 'App\\Entity';
+    private string $entityPath = 'src/Entity';
 
     /**
      * @param EntityManagerProvider $entityManagerProvider
+     * @param string $namespace
+     * @param string $entityPath
      */
-    public function __construct(EntityManagerProvider $entityManagerProvider)
-    {
+    public function __construct(
+        EntityManagerProvider $entityManagerProvider,
+        string $namespace = 'App\\Entity',
+        string $entityPath = 'src/Entity'
+    ) {
         parent::__construct($entityManagerProvider);
         $this->entityManagerProvider = $entityManagerProvider;
         $this->entityManager = $this->entityManagerProvider->getDefaultManager();
+        $this->namespace = $namespace;
+        $this->entityPath = $entityPath;
     }
 
     /**
@@ -37,10 +47,10 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
         $this
             ->setName(self::$defaultName)
             ->setDescription('Generate entity classes from existing database tables')
-            ->addOption('namespace', null, InputOption::VALUE_REQUIRED, 'The namespace to use for generated entities', 'App\\Entity')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Destination path for generated entities', 'src/Entity')
+            ->addOption('namespace', null, InputOption::VALUE_REQUIRED, 'The namespace to use for generated entities', null)
+            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Destination path for generated entities', null)
             ->addOption('filter', null, InputOption::VALUE_OPTIONAL, 'Filter to generate specific table only')
-            ->addOption('fetch-strategy', null, InputOption::VALUE_OPTIONAL, 'Default fetch strategy (LAZY, EAGER, EXTRA_LAZY)', 'LAZY')
+            ->addOption('fetch-strategy', null, InputOption::VALUE_OPTIONAL, 'Default fetch strategy ('.implode(",",$this->validFetchStrategies).')', 'LAZY')
             ->setHelp('This command generates entity classes from your existing database schema');
     }
 
@@ -53,10 +63,12 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $em = $this->entityManager;
-        $namespace = $input->getOption('namespace');
-        $destPath = $input->getOption('path');
+        $namespace = $input->getOption('namespace') ?? $this->namespace;
+        $destPath = $input->getOption('path') ?? $this->entityPath;
         $filter = $input->getOption('filter');
         $fetchStrategy = $input->getOption('fetch-strategy');
+
+        $fetchStrategy = in_array(strtoupper($fetchStrategy), $this->validFetchStrategies) ? strtoupper($fetchStrategy): 'LAZY';
 
         if (!file_exists($destPath)) {
             mkdir($destPath, 0777, true);
@@ -68,7 +80,7 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
 
         if ($filter) {
             $tables = array_filter($tables, function($table) use ($filter) {
-                return $table->getName() === $filter;
+                return stripos($table->getName(), $filter) !== false;
             });
             if (empty($tables)) {
                 $output->writeln(sprintf('<error>No table found with name: %s</error>', $filter));
@@ -122,24 +134,27 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
             $isNullable = !$column->getNotnull();
             $typeHint = $isNullable ? '?' . $phpType : $phpType;
 
+            if ($column->getAutoincrement() || $column->getName() == 'id') {
+                $propertyAnnotations[] = "#[ORM\\Id]";
+            }
+
+            if ($column->getAutoincrement()) {
+                $propertyAnnotations[] = "#[ORM\\GeneratedValue(strategy: \"AUTO\")]";
+            }
+
             $propertyAnnotations = [
                 "#[ORM\\Column(name: \"{$propertyName}\", type: \"{$columnType}\"" .
                 ($column->getLength() ? ", length: {$column->getLength()}" : "") .
+                ($column->getPrecision() ? ", precision: {$column->getPrecision()}" : "") .
+                ($column->getScale() ? ", scale: {$column->getScale()}" : "") .
                 ($isNullable ? ", nullable: true" : "") .
-                ($column->getDefault() !== null ? ", options: ['default' => '{$column->getDefault()}']" : "") .
+                ($column->getDefault() !== null && !$column->getUnsigned() ? ", options: ['default' => '{$column->getDefault()}']" : "") .
+                (!$column->getDefault() && $column->getUnsigned() ? ", options: ['unsigned' => true]" : "") .
+                ($column->getDefault() !== null && $column->getUnsigned() ? ", options: ['default' => '{$column->getDefault()}', 'unsigned' => true]" : "") .
                 ")]"
             ];
 
             $propertyNameUpper = $this->covertToPascalCase($propertyName);
-
-            if ($column->getAutoincrement()) {
-                $propertyAnnotations[] = "#[ORM\\Id]";
-                $propertyAnnotations[] = "#[ORM\\GeneratedValue(strategy: \"AUTO\")]";
-            } else {
-                if($column->getName() == "id"){
-                    $propertyAnnotations[] = "#[ORM\\Id]";
-                }
-            }
 
             $properties[] = sprintf(
                 "    %s\n    private %s $%s;\n",
@@ -148,7 +163,6 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
                 $propertyNameUpper
             );
 
-            // Getter
             $gettersSetters[] = sprintf(
                 "    public function get%s(): %s\n    {\n        return \$this->%s;\n    }\n",
                 ucfirst($propertyNameUpper),
@@ -156,7 +170,6 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
                 $propertyNameUpper
             );
 
-            // Setter
             $gettersSetters[] = sprintf(
                 "    public function set%s(%s $%s): self\n    {\n        \$this->%s = \$%s;\n        return \$this;\n    }\n",
                 ucfirst($propertyNameUpper),
@@ -179,21 +192,34 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
             }
 
             $relatedClassName = $this->generatedEntities[$relatedTable];
-            $relationshipType = 'ManyToOne';
-
             $localColumn = $localColumns[0];
             $propertyName = $this->covertToPascalCase(str_replace('_id', '', $localColumn));
 
+            $indexes = $table->getIndexes();
+            $isOneToOne = false;
+            foreach ($indexes as $index) {
+                if ($index->isUnique() && in_array($localColumn, $index->getColumns())) {
+                    $isOneToOne = true;
+                    break;
+                }
+            }
+            $primaryKey = $table->getPrimaryKey();
+            if ($primaryKey !== null && in_array($localColumn, $primaryKey->getColumns())) {
+                $isOneToOne = true;
+            }
+
+            $relationshipType = $isOneToOne ? 'OneToOne' : 'ManyToOne';
+
             $relationshipProperties[] = sprintf(
-                "    #[ORM\\%s(targetEntity: %s::class, fetch: ORM\\Mapping\\ClassMetadata::FETCH_%s)]\n" .
+                "    #[ORM\\%s(targetEntity: %s::class, fetch: \"%s\")]\n" .
                 "    #[ORM\\JoinColumn(name: \"%s\", referencedColumnName: \"%s\", nullable: %s)]\n" .
                 "    private ?%s $%s = null;\n",
                 $relationshipType,
-                $namespace . '\\' . $relatedClassName,
+                '\\' . $namespace . '\\' . $relatedClassName,
                 strtoupper($fetchStrategy),
                 $localColumn,
                 $foreignColumns[0],
-                'true',
+                $isOneToOne ? 'false' : 'true',
                 $relatedClassName,
                 $propertyName
             );
@@ -215,6 +241,129 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
             );
         }
 
+        $allTables = $this->entityManager->getConnection()->createSchemaManager()->listTables();
+        foreach ($allTables as $otherTable) {
+            foreach ($otherTable->getForeignKeys() as $fk) {
+                if ($fk->getForeignTableName() === $table->getName()) {
+                    $relatedTable = $otherTable->getName();
+                    if (!isset($this->generatedEntities[$relatedTable])) {
+                        continue;
+                    }
+
+                    $relatedClassName = $this->generatedEntities[$relatedTable];
+                    $propertyName = $this->covertToPascalCase($relatedTable);
+                    $mappedBy = $this->covertToPascalCase(str_replace('_id', '', $fk->getLocalColumns()[0]));
+
+                    $indexes = $otherTable->getIndexes();
+                    $isOneToOne = false;
+                    foreach ($indexes as $index) {
+                        if ($index->isUnique() && in_array($fk->getLocalColumns()[0], $index->getColumns())) {
+                            $isOneToOne = true;
+                            break;
+                        }
+                    }
+                    $otherPrimaryKey = $otherTable->getPrimaryKey();
+                    if ($otherPrimaryKey !== null && in_array($fk->getLocalColumns()[0], $otherPrimaryKey->getColumns())) {
+                        $isOneToOne = true;
+                    }
+
+                    if ($isOneToOne) {
+                        $relationshipProperties[] = sprintf(
+                            "    #[ORM\\OneToOne(targetEntity: %s::class, mappedBy: \"%s\", fetch: \"%s\")]\n" .
+                            "    private ?%s $%s = null;\n",
+                            '\\' . $namespace . '\\' . $relatedClassName,
+                            $mappedBy,
+                            strtoupper($fetchStrategy),
+                            $relatedClassName,
+                            $propertyName
+                        );
+
+                        $relationshipGettersSetters[] = sprintf(
+                            "    public function get%s(): ?%s\n    {\n        return \$this->%s;\n    }\n",
+                            ucfirst($propertyName),
+                            $relatedClassName,
+                            $propertyName
+                        );
+
+                        $relationshipGettersSetters[] = sprintf(
+                            "    public function set%s(?%s $%s): self\n    {\n        \$this->%s = \$%s;\n" .
+                            "        if (\$%s !== null) {\n" .
+                            "            \$%s->set%s(\$this);\n" .
+                            "        }\n" .
+                            "        return \$this;\n    }\n",
+                            ucfirst($propertyName),
+                            $relatedClassName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            ucfirst($mappedBy)
+                        );
+                    } else {
+                        $relationshipProperties[] = sprintf(
+                            "    #[ORM\\OneToMany(targetEntity: %s::class, mappedBy: \"%s\", fetch: \"%s\")]\n" .
+                            "    private \Doctrine\Common\Collections\Collection $%s;\n",
+                            '\\' . $namespace . '\\' . $relatedClassName,
+                            $mappedBy,
+                            strtoupper($fetchStrategy),
+                            $propertyName
+                        );
+
+                        $relationshipGettersSetters[] = sprintf(
+                            "    public function get%s(): \Doctrine\Common\Collections\Collection\n    {\n        return \$this->%s;\n    }\n",
+                            ucfirst($propertyName),
+                            $propertyName
+                        );
+
+                        $relationshipGettersSetters[] = sprintf(
+                            "    public function add%s(%s $%s): self\n    {\n" .
+                            "        if (!\$this->%s->contains(\$%s)) {\n" .
+                            "            \$this->%s->add(\$%s);\n" .
+                            "            \$%s->set%s(\$this);\n" .
+                            "        }\n        return \$this;\n    }\n",
+                            ucfirst($propertyName),
+                            $relatedClassName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            ucfirst($mappedBy)
+                        );
+
+                        $relationshipGettersSetters[] = sprintf(
+                            "    public function remove%s(%s $%s): self\n    {\n" .
+                            "        if (\$this->%s->removeElement(\$%s)) {\n" .
+                            "            \$%s->set%s(null);\n" .
+                            "        }\n        return \$this;\n    }\n",
+                            ucfirst($propertyName),
+                            $relatedClassName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            $propertyName,
+                            ucfirst($mappedBy)
+                        );
+                    }
+                }
+            }
+        }
+
+        $constructor = '';
+        $collectionProperties = array_filter($relationshipProperties, function($prop) {
+            return strpos($prop, 'Collection') !== false;
+        });
+
+        if (!empty($collectionProperties)) {
+            $constructor = "    public function __construct()\n    {\n";
+            foreach ($collectionProperties as $prop) {
+                preg_match('/private .+ \$(\w+)/', $prop, $matches);
+                $constructor .= "        \$this->{$matches[1]} = new \Doctrine\Common\Collections\ArrayCollection();\n";
+            }
+            $constructor .= "    }\n";
+        }
 
         $allProperties = array_merge($properties, $relationshipProperties);
         $allGettersSetters = array_merge($gettersSetters, $relationshipGettersSetters);
@@ -281,7 +430,7 @@ class GenerateEntitiesFromDatabaseCommand extends AbstractEntityManagerCommand
             'integer' => 'int',
             'int' => 'int',
             'varchar' => 'string',
-            'text' => 'text',
+            'text' => 'string',
             'datetime' => '\DateTime',
             'date' => '\DateTime',
             'time' => 'time',
