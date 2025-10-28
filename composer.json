@@ -15,7 +15,7 @@
         }
     },
     "require": {
-        "php": ">=8",
+        "php": ">=8.3",
         "ext-curl": "*",
         "ext-openssl": "*",
         "ext-date": "*",
@@ -54,7 +54,8 @@
         "fullpipe/twig-webpack-extension": "^4.0",
         "voku/anti-xss": "^4.1",
         "symfony/cache": "^5.4",
-        "doctrine/cache": "^2.2"
+        "doctrine/cache": "^2.2",
+        "intervention/image": "^3.6"
     },
     "minimum-stability": "stable",
     "config": {
