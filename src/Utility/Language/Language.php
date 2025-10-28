@@ -241,9 +241,9 @@ class Language extends ApolloContainer
             $spreadsheet->getActiveSheet()->fromArray($exportData);
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             try {
-                $fileLocation = $_SERVER["DOCUMENT_ROOT"] . '/translations.xlsx';
+                $fileLocation = BASE_DIR . '/translations.xlsx';
                 if ($isAppTranslations){
-                    $fileLocation = $_SERVER["DOCUMENT_ROOT"] . '/app_translations.xlsx';
+                    $fileLocation = BASE_DIR . '/app_translations.xlsx';
                 }
                 $writer->save($fileLocation);
                 return 'Your file location is: ' . $fileLocation;
@@ -261,7 +261,7 @@ class Language extends ApolloContainer
     public function exportAppLanguagesToJSON(): string
     {
         foreach ($this->app_translate as $key => $lang){
-            $fileLocation = $_SERVER["DOCUMENT_ROOT"] . '/'.$key.'.json';
+            $fileLocation = BASE_DIR . '/'.$key.'.json';
             try {
                 file_put_contents($fileLocation, json_encode($lang));
             }catch (\Exception $e){
@@ -302,9 +302,9 @@ class Language extends ApolloContainer
     {
         if (class_exists('\PhpOffice\PhpSpreadsheet\IOFactory')) {
             if ($fileLocation == null) {
-                $fileLocation = $_SERVER["DOCUMENT_ROOT"] . '/translations.xlsx';
+                $fileLocation = BASE_DIR . '/translations.xlsx';
                 if ($isAppTranslations){
-                    $fileLocation = $_SERVER["DOCUMENT_ROOT"] . '/app_translations.xlsx';
+                    $fileLocation = BASE_DIR . '/app_translations.xlsx';
                 }
             }
             if (file_exists($fileLocation)) {
@@ -376,9 +376,9 @@ class Language extends ApolloContainer
     private function saveConvertedExcelDataToTranslationFiles($convertedData, bool $isAppTranslations = false): bool
     {
         $filesCreated = true;
-        $folderLocation = $_SERVER["DOCUMENT_ROOT"] . '/config/translations';
+        $folderLocation = BASE_DIR. '/config/translations';
         if ($isAppTranslations){
-            $folderLocation = $_SERVER["DOCUMENT_ROOT"] . '/config/translations/app';
+            $folderLocation = BASE_DIR . '/config/translations/app';
         }
         foreach ($convertedData as $language => $data) {
             if (file_put_contents($folderLocation . '/' . $language . '.php', "<?php \n\n return " . var_export($data, true) . ";") == false) {
