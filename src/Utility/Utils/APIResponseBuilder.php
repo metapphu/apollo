@@ -1,30 +1,34 @@
 <?php
+
 namespace Metapp\Apollo\Utility\Utils;
 
-class APIResponseBuilder{
+use Psr\Http\Message\ResponseInterface;
+
+class APIResponseBuilder
+{
 
     /**
      * @var int
      */
-    private $status = 200;
+    private int $status;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $message = "";
+    private string|null $message;
 
     /**
      * @var array
      */
-    private $data = array();
+    private array $data;
 
     /**
      * APIResponseBuilder constructor.
      * @param int $status
-     * @param string $message
+     * @param string|null $message
      * @param array $data
      */
-    public function __construct($status = 200, $message = "", array $data = array())
+    public function __construct(int $status = 200, string $message = null, array $data = array())
     {
         $this->status = $status;
         $this->message = $message;
@@ -35,7 +39,7 @@ class APIResponseBuilder{
     /**
      * @return int
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -44,25 +48,26 @@ class APIResponseBuilder{
      * @param int $status
      * @return APIResponseBuilder
      */
-    public function setStatus($status)
+    public function setStatus($status): static
     {
         $this->status = $status;
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMessage()
+    public function getMessage(): ?string
     {
         return $this->message;
     }
 
     /**
      * @param string $message
+     * @param null $status
      * @return APIResponseBuilder
      */
-    public function setMessage($message, $status = null)
+    public function setMessage(string $message, $status = null): static
     {
         if ($status != null) {
             $this->status = $status;
@@ -74,49 +79,54 @@ class APIResponseBuilder{
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
 
-    /**
-     * @param array $data
-     * @return APIResponseBuilder
-     */
-    public function setData($data)
+    public function setData(array $data): static
     {
         $this->data = $data;
         return $this;
     }
 
-	/**
-	 * @param array $data
-	 * @return APIResponseBuilder
-	 */
-	public function addData($data)
-	{
-		$this->data[] = $data;
-		return $this;
-	}
+    public function addData($data): static
+    {
+        $this->data[] = $data;
+        return $this;
+    }
 
     /**
      * @return string
      */
-    public function build(){
+    public function build(): string
+    {
         $response = array(
             "status" => $this->getStatus()
         );
 
-        if($this->getMessage() != ""){
+        if ($this->getMessage() != "") {
             $response["message"] = $this->getMessage();
         }
 
-        if(!empty($this->getData())) {
-            if (is_array($this->getData())) {
-                $response["data"] = $this->getData();
-            }
+        if (!empty($this->getData())) {
+            $response["data"] = $this->getData();
         }
 
         return json_encode($response);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param int $status
+     * @param string|null $message
+     * @param array $data
+     * @return ResponseInterface
+     */
+    public static function staticBuild(ResponseInterface $response, int $status = 200, string $message = null, array $data = array()): ResponseInterface
+    {
+        $builder = new self($status, $message, $data);
+        $response->getBody()->write($builder->build());
+        return $response->withStatus($status);
     }
 }
