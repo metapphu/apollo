@@ -242,6 +242,14 @@ class ApolloContainer implements LoggerHelperInterface
     {
         return $this->entityManager;
     }
+
+    /**
+     * @return Auth
+     */
+    public function getAuth()
+    {
+        return $this->auth;
+    }
 	
     /**
      * @return Config
