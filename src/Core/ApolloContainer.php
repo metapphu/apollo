@@ -250,7 +250,15 @@ class ApolloContainer implements LoggerHelperInterface
     {
         return $this->auth;
     }
-	
+
+    /**
+     * @return Environment
+     */
+    public function getTwig(): Environment
+    {
+        return $this->twig;
+    }
+
     /**
      * @return Config
      */
