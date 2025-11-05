@@ -138,6 +138,15 @@ class Language extends ApolloContainer
         return $this->app_language_version;
     }
 
+
+    /**
+     * @return string|null
+     */
+    public function getLang(): string|null
+    {
+        return $this->lang;
+    }
+
     /**
      * @param $key
      * @param string $lang
